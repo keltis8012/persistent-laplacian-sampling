@@ -273,6 +273,11 @@ chk("P11", "closed form 0.0232", "0.0232", _cf, tol=5e-5)
 x15 = load("x15")
 chk("P11", "grid lam2 at c1=1", "0.02409", x15["lam2_grid_c1_1"])
 chk("P11", "F_1200 = 0.796", "0.796", x15["F_n"], tol=0.002)
+x16 = load("x16")
+for v, r in zip(["0.793", "0.501", "0.298"], x16):
+    chk("P11", f"S2 gap n={r['n']}", v, r["lam1_up"])
+chk("P11", "S2 kernel fraction 0.41", "0.41", x16[0]["ker_dim"] / x16[0]["edges"], tol=0.006)
+chk("P11", "S2 kernel fraction 0.23", "0.23", x16[2]["ker_dim"] / x16[2]["edges"], tol=0.006)
 c1 = load("x4")["calibration_c1"]
 chk("P11", "c1 equals the closed form", "0.02317", c1, tol=5e-5)
 

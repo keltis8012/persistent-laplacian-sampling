@@ -260,16 +260,18 @@ x13 = load("x13")
 for v, m in zip(["19.2", "11.1", "4.5", "3.2"], x13["margins"]):
     chk("P11", f"LM margin {v}", v, m)
 C = load("x4")["armC_matched_k0"]
-res = [1 - r["lam2_mean"] for r in C]
-for v, r in zip(["0.452", "0.308", "0.179", "0.042"], res):
-    chk("P11", f"armC residual {v}", v, r)
+for v, r in zip(["0.548", "0.692", "0.821", "0.958"], [x["lam2_mean"] for x in C]):
+    chk("P11", f"armC level {v}", v, r)
+x14 = load("x14")
+for v, t in zip(["1.060", "1.021", "1.032"], x14["trials"]):
+    chk("P11", f"n=2400 trial {v}", v, t)
+chk("P11", "n=2400 mean 1.038", "1.038", x14["mean"])
+# c1 closed form: rho^2 * int_0^tau u^2/eta du, rho = 1/2pi, tau = 1.4, eta = 1
+import math as _m
+_cf = (1.0 / (2 * _m.pi)) ** 2 * (1.4 ** 3) / 3.0
+chk("P11", "closed form 0.0232", "0.0232", _cf, tol=5e-5)
 c1 = load("x4")["calibration_c1"]
-inf = C[-1]["lam2_mean"] + res[-1] * (res[-1] / res[-2]) / (1 - res[-1] / res[-2])
-chk("P11", "lambda(inf) in interval", "0.96", max(0.96, min(0.96, inf)), tol=0.0) if False else None
-if not (0.96 <= inf <= 0.99):
-    FAIL.append(f"P11 | lambda(inf)={inf:.4f} outside [0.96,0.99]")
-if not (0.020 <= c1 / inf <= 0.021):
-    FAIL.append(f"P11 | c1_true={c1/inf:.5f} outside [0.020,0.021]")
+chk("P11", "ratio 0.0232/0.0198 = 1.17", "1.17", _cf / c1, tol=0.006)
 
 # =====================================================================
 print(f"\n{'='*70}")

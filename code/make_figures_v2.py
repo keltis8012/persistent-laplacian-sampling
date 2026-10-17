@@ -88,7 +88,11 @@ def fig1():
     # (c) headline ratio convergence
     ax = axs[2]
     d = J("x4")["armA_vanishing"]; ns = [x["n"] for x in d]; m = [x["ratio42_mean"] for x in d]; e = [x["ratio42_sem"] for x in d]
-    ax.errorbar(ns, m, yerr=e, fmt="o-", color=TEAL, ms=3.4, capsize=2, lw=1.2)
+    ax.errorbar(ns, m, yerr=e, fmt="o-", color=TEAL, ms=3.2, capsize=2, lw=1.1, label="arm A")
+    dd = J("x10"); ax.errorbar([x["n"] for x in dd], [x["ratio42_mean"] for x in dd],
+                               yerr=[x["ratio42_sem"] for x in dd], fmt="s--", color=CORAL,
+                               ms=3.0, capsize=2, lw=1.0, label="arm D")
+    ax.legend(frameon=False, loc="lower right")
     ax.axhline(4, color=CORAL, ls="--", lw=0.9); ax.annotate("Hodge: 4", (1350, 4.05), fontsize=6.2, color=CORAL, ha="right")
     ax.set_xscale("log"); ax.set_xlabel("$n$"); ax.set_ylabel("$\\hat\\lambda_4/\\hat\\lambda_2$")
     ax.set_title("shape-level convergence ($S^1$, $k=1$)", fontsize=6.6)
@@ -165,6 +169,8 @@ def fig3():
     ax.set_title("bandwidth law", fontsize=6.6)
     ax = axs[3]
     ax.plot(na, [x["ratio42_mean"] for x in a], "o-", color=TEAL, ms=3.2, lw=1.1, label="arm A")
+    ax.plot([x["n"] for x in J("x10")], [x["ratio42_mean"] for x in J("x10")], "s--",
+            color=CORAL, ms=3.0, lw=1.0, label="arm D")
     ax.axhline(4, color=GRAY, ls="--", lw=0.8)
     ax.set_xscale("log"); ax.set_ylim(2, 5.2)
     ax.set_xlabel("$n$"); ax.set_ylabel("$\\hat\\lambda_4/\\hat\\lambda_2$")

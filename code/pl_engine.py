@@ -806,6 +806,34 @@ def X8():
         log(f"  n={n}: unnorm lam2={lam[1]:.4f} (deg {deg:.1f}), calib lam2={lamc[1]:.4g}, beta0={b0}")
     return out
 
+
+def X10():
+    """Arm D: k=1 at the matched bandwidth with unit level constants for both degrees.
+
+    Arm B uses the k=0-calibrated c1 for the down-part while c2 stays 1, which suppresses the
+    down-part relative to the up-part; with c1 = c2 = 1 the Hodge ladder is resolved. The
+    c1/c2 ratio is the multi-level calibration gap of Remark D.6.
+    """
+    global CONST
+    CONST = 1.0
+    log("X10: arm D (k=1, matched bandwidth, unit level constants)")
+    out = []
+    for i, n in enumerate((150, 300, 600, 1200)):
+        t = n**(-1.0/3.0)
+        vals, rats = [], []
+        for j in range(8):
+            X, _ = circle(n, rng=np.random.default_rng(430000 + 1000*i + j))
+            rho = np.full(n, 1.0/(2*math.pi))
+            lam = pl_k1(X, t, 1.4*t, rho, t, wmode="lm", route="fam", kmax=6)
+            vals.append(lam[1]); rats.append(lam[3]/lam[1])
+        vals, rats = np.array(vals), np.array(rats)
+        out.append(dict(n=n, t=round(t, 4), lam2_mean=float(vals.mean()),
+                        lam2_std=float(vals.std(ddof=1)),
+                        ratio42_mean=float(rats.mean()),
+                        ratio42_sem=float(rats.std(ddof=1)/np.sqrt(8))))
+        log(f"  armD n={n}: lam2={vals.mean():.5g} ratio={rats.mean():.3f}")
+    return out
+
 def main():
     results = {}
     results["X1"] = X1(); json.dump(results["X1"], open(f"{OUT}/x1.json","w"), indent=1, default=float); log("X1 done")
@@ -816,6 +844,7 @@ def main():
     results["X6"] = X6(); json.dump(results["X6"], open(f"{OUT}/x6.json","w"), indent=1, default=float); log("X6 done")
     results["X7"] = X7(); json.dump(results["X7"], open(f"{OUT}/x7.json","w"), indent=1, default=float); log("X7 done")
     results["X8"] = X8(); json.dump(results["X8"], open(f"{OUT}/x8.json","w"), indent=1, default=float); log("X8 done")
+    results["X10"] = X10(); json.dump(results["X10"], open(f"{OUT}/x10.json","w"), indent=1, default=float); log("X10 done")
     json.dump(results, open(f"{OUT}/all.json","w"), indent=1, default=float)
     log("ALL DONE")
 

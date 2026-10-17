@@ -237,6 +237,15 @@ for (v, a, b) in [("10.7", 0, 1), ("5.9", 1, 2), ("5.2", 2, 3)]:
 chk("P9", "law drift starts 0.0016", "0.0016", x8["calib"][0]["law_n2t6"])
 chk("P9", "law drift ends 0.0081", "0.0081", x8["calib"][3]["law_n2t6"])
 
+
+# =====================================================================
+head("prose  §4.4 arm D (x10.json)")
+x10 = load("x10")
+D = [("150", "3.70", "0.31"), ("300", "4.70", "0.49"), ("600", "4.01", "0.15"), ("1200", "3.97", "0.13")]
+for (n, r, se), row in zip(D, x10):
+    chk("P10", f"armD n={n} ratio", r, row["ratio42_mean"])
+    chk("P10", f"armD n={n} sem", se, row["ratio42_sem"])
+
 # =====================================================================
 print(f"\n{'='*70}")
 print(f"checked {N} printed numbers; failures: {len(FAIL)}")

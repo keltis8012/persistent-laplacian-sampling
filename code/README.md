@@ -29,6 +29,7 @@ numbers in the paper are the numbers in the JSON files; nothing is transcribed b
 | §4.7, Supplementary Fig. 1 | `x7.json` | `X7` |
 | §4.8, Supplementary Fig. 2 | `x8.json` | `X8` |
 | Table 7, §4.9 | `x9.json` | `x9_fixedband.py` |
+| diagnostic only, not cited | `x11.json` | the τ-scan behind the rigidity note (family route valid only below the chord threshold) |
 | Fig. 6a | analytic, no data | `make_figures_v2.py` |
 | Fig. 6b | status grid drawn from Table 2 | `make_figures_v2.py` |
 

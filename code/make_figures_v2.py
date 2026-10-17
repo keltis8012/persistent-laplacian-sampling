@@ -47,8 +47,10 @@ def save(fig, name):
 
 # ---------------------------------------------------------------- FIG 1
 def fig1():
-    fig, axs = plt.subplots(1, 3, figsize=(7.4, 2.5))
-    for ax in axs: lab(ax, "abc"[list(axs).index(ax)])
+    fig, axs = plt.subplots(2, 2, figsize=(7.2, 5.0))
+    axs = axs.ravel()
+    for i, ax in enumerate(axs):
+        lab(ax, "abcd"[i])
     # (a) two-scale pair schematic
     ax = axs[0]; ax.set_aspect("equal"); ax.axis("off")
     rng = np.random.default_rng(3); th = np.sort(rng.uniform(0, 2*np.pi, 22))
@@ -58,7 +60,6 @@ def fig1():
         d = np.linalg.norm(P[i]-P[j])
         if d <= r: ax.plot([P[i,0],P[j,0]],[P[i,1],P[j,1]], color=TEAL, lw=0.9, zorder=2)
         elif d <= s: ax.plot([P[i,0],P[j,0]],[P[i,1],P[j,1]], color=CORAL, lw=0.6, alpha=0.75, zorder=1)
-    # shade one s-only triangle
     tri = None
     for i, j, k in combinations(range(len(P)), 3):
         ds = [np.linalg.norm(P[i]-P[j]), np.linalg.norm(P[j]-P[k]), np.linalg.norm(P[i]-P[k])]
@@ -81,12 +82,30 @@ def fig1():
         j = min(range(len(ss)), key=lambda t: abs(ss[t]-ssv))
         M[i, j] = k
     cmap = ListedColormap(["#f3efe6", "#9ec9c1", TEAL])
-    im = ax.imshow(M, origin="lower", cmap=cmap, vmin=0, vmax=2, aspect="auto",
-                   extent=[ss[0], ss[-1], rs[0], rs[-1]])
+    ax.imshow(M, origin="lower", cmap=cmap, vmin=0, vmax=2, aspect="auto",
+              extent=[ss[0], ss[-1], rs[0], rs[-1]])
     ax.set_xlabel("$s$"); ax.set_ylabel("$r$")
-    ax.set_title("$\\dim\\ker\\hat\\Delta^{r,s}_1$ on 64 cells (= $\\beta^{r,s}_1$, 128/128 checks)", fontsize=6.6)
-    # (c) headline ratio convergence
+    ax.set_title("$\\dim\\ker\\hat\\Delta^{r,s}_1$ on 64 cells (= $\\beta^{r,s}_1$)", fontsize=6.6)
+    # (c) spectral surface lam_1(r,s)
     ax = axs[2]
+    g17 = J("x17"); rs, ss = g17["grid"]["r"], g17["grid"]["s"]
+    Ml = np.full((len(rs), len(ss)), np.nan)
+    Mb = np.full((len(rs), len(ss)), np.nan)
+    for c in g17["cells"]:
+        i = min(range(len(rs)), key=lambda t: abs(rs[t]-c["r"]))
+        j = min(range(len(ss)), key=lambda t: abs(ss[t]-c["s"]))
+        if c["lam1"] is not None: Ml[i, j] = c["lam1"]
+        Mb[i, j] = c["beta"]
+    im = ax.imshow(Ml, origin="lower", aspect="auto", cmap="viridis",
+                   extent=[ss[0], ss[-1], rs[0], rs[-1]])
+    ax.contour(np.linspace(ss[0], ss[-1], len(ss)), rs, np.nan_to_num(Mb), levels=[0.5],
+               colors=INK, linewidths=0.8, linestyles="--")
+    cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.02)
+    cb.ax.tick_params(labelsize=5.5); cb.set_label("$\\hat\\lambda_1$", fontsize=6.0)
+    ax.set_xlabel("$s$"); ax.set_ylabel("$r$")
+    ax.set_title("$\\hat\\lambda^{r,s}_1$; dashed: $\\beta^{r,s}_1$ jump", fontsize=6.6)
+    # (d) headline ratio convergence
+    ax = axs[3]
     d = J("x4")["armA_vanishing"]; ns = [x["n"] for x in d]; m = [x["ratio42_mean"] for x in d]; e = [x["ratio42_sem"] for x in d]
     ax.errorbar(ns, m, yerr=e, fmt="o-", color=TEAL, ms=3.2, capsize=2, lw=1.1, label="arm A")
     dd = J("x10"); ax.errorbar([x["n"] for x in dd], [x["ratio42_mean"] for x in dd],
@@ -96,7 +115,7 @@ def fig1():
     ax.axhline(4, color=CORAL, ls="--", lw=0.9); ax.annotate("Hodge: 4", (1350, 4.05), fontsize=6.2, color=CORAL, ha="right")
     ax.set_xscale("log"); ax.set_xlabel("$n$"); ax.set_ylabel("$\\hat\\lambda_4/\\hat\\lambda_2$")
     ax.set_title("shape-level convergence ($S^1$, $k=1$)", fontsize=6.6)
-    fig.subplots_adjust(left=0.04, right=0.99, bottom=0.17, top=0.9, wspace=0.34)
+    fig.subplots_adjust(left=0.07, right=0.98, bottom=0.09, top=0.93, wspace=0.30, hspace=0.40)
     save(fig, "fig1_entry")
 
 # ---------------------------------------------------------------- FIG 2 (E2)

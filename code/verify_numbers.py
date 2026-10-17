@@ -281,6 +281,24 @@ chk("P11", "S2 kernel fraction 0.23", "0.23", x16[2]["ker_dim"] / x16[2]["edges"
 c1 = load("x4")["calibration_c1"]
 chk("P11", "c1 equals the closed form", "0.02317", c1, tol=5e-5)
 
+
+# =====================================================================
+head("prose  Table 5 rate fit / Figure 1c surface (x18, x17)")
+x18 = load("x18_rates")
+chk("P12", "n-exponent 2.156", "2.156", x18["alpha"], tol=0.0006)
+chk("P12", "n-exponent se 0.030", "0.030", x18["alpha_se"], tol=0.0006)
+chk("P12", "t-exponent 5.934", "5.934", x18["beta"], tol=0.0006)
+chk("P12", "t-exponent se 0.015", "0.015", x18["beta_se"], tol=0.0006)
+chk("P12", "law spread 6.0%", "6.0", x18["law_halfrange_pct"], tol=0.05)
+x17 = load("x17")
+chk("P12", "surface cells 64", "64", len(x17["cells"]))
+g3 = load("x3")["cells"]
+b17 = {(round(c["r"], 4), round(c["s"], 4)): c["beta"] for c in x17["cells"]}
+bad_beta = [k for (rr, ss, _k, bb) in g3 if b17.get((round(rr, 4), round(ss, 4))) != bb]
+print(f"  surface beta vs barcode grid: {len(b17)} cells, mismatches {len(bad_beta)}")
+if bad_beta:
+    FAIL.append(f"P12 | beta disagrees on {len(bad_beta)} cells")
+
 # =====================================================================
 print(f"\n{'='*70}")
 print(f"checked {N} printed numbers; failures: {len(FAIL)}")

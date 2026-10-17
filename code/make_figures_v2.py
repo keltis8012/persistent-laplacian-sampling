@@ -14,6 +14,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, FancyArrowPatch, Circle
 from matplotlib.colors import ListedColormap
+from matplotlib.ticker import NullLocator
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -35,8 +36,15 @@ def J(name):
     return json.load(open(os.path.join(DATA, name + ".json"), encoding="utf-8"))
 
 def lab(ax, s):
-    ax.text(-0.15, 1.05, s, transform=ax.transAxes, fontsize=9.5,
-            fontweight="bold", va="top", ha="left", color=INK)
+    ax.text(-0.15, 1.02, s, transform=ax.transAxes, fontsize=9.5,
+            fontweight="bold", va="bottom", ha="left", color=INK)
+
+def logx(ax, vals):
+    """对数轴只标数据点，避免 10^k 刻度挤在一起。"""
+    ax.set_xticks(vals)
+    ax.set_xticklabels([str(v) for v in vals])
+    ax.xaxis.set_minor_locator(NullLocator())
+
 
 def save(fig, name):
     # 同时出位图（预览）与矢量（投稿）：期刊要求线图/热图为矢量
@@ -114,6 +122,7 @@ def fig1():
     ax.legend(frameon=False, loc="lower right")
     ax.axhline(4, color=CORAL, ls="--", lw=0.9); ax.annotate("Hodge: 4", (1350, 4.05), fontsize=6.2, color=CORAL, ha="right")
     ax.set_xscale("log"); ax.set_xlabel("$n$"); ax.set_ylabel("$\\hat\\lambda_4/\\hat\\lambda_2$")
+    logx(ax, [150, 300, 600, 1200])
     ax.set_title("shape-level convergence ($S^1$, $k=1$)", fontsize=6.6)
     fig.subplots_adjust(left=0.07, right=0.98, bottom=0.09, top=0.93, wspace=0.30, hspace=0.40)
     save(fig, "fig1_entry")
@@ -158,7 +167,7 @@ def fig2():
     ax.set_xlabel("$j$"); ax.set_ylabel("$\\hat\\lambda_{0,j}(0.5,1.5)$")
     ax.legend(frameon=False, loc="upper left")
     ax.set_title("spectra differ ($\\lambda_2$: 0.382 vs 1)", fontsize=6.6)
-    fig.subplots_adjust(left=0.04, right=0.99, bottom=0.19, top=0.9, wspace=0.3)
+    fig.subplots_adjust(left=0.04, right=0.99, bottom=0.19, top=0.88, wspace=0.3)
     save(fig, "fig2_same_barcode")
 
 # ---------------------------------------------------------------- FIG 3 (E3)
@@ -171,11 +180,13 @@ def fig3():
     ax.errorbar(ns, [x["lam2_std"] for x in b], yerr=None, fmt="o-", color=TEAL, ms=3.2, lw=1.1)
     ax.plot(ns, 0.0012*np.log(ns)/np.sqrt(ns), "--", color=GRAY, lw=0.9, label="$C\\log n/\\sqrt{n}$")
     ax.set_xscale("log"); ax.set_yscale("log")
+    logx(ax, [150, 300, 600, 1200])
     ax.set_xlabel("$n$"); ax.set_ylabel("$\\mathrm{sd}(\\hat\\lambda_2)$ (arm B)")
     ax.legend(frameon=False); ax.set_title("concentration", fontsize=6.6)
     ax = axs[1]
     ax.plot(ns, [x["C_emp"] for x in b], "o-", color=TEAL, ms=3.2, lw=1.1)
     ax.set_xscale("log"); ax.set_yscale("log")
+    logx(ax, [150, 300, 600, 1200])
     ax.set_xlabel("$n$"); ax.set_ylabel("$C_{\\rm emp}$")
     ax.set_title("envelope constant (conservative)", fontsize=6.6)
     ax = axs[2]
@@ -184,6 +195,7 @@ def fig3():
     ax.plot(na, law, "o-", color=TEAL, ms=3.2, lw=1.1)
     ax.axhline(np.mean(law), color=CORAL, ls=":", lw=0.8)
     ax.set_xscale("log")
+    logx(ax, [150, 300, 600, 1200])
     ax.set_xlabel("$n$"); ax.set_ylabel("$\\hat\\lambda_2/(n^2t^6)$ (arm A)")
     ax.set_title("bandwidth law", fontsize=6.6)
     ax = axs[3]
@@ -192,9 +204,10 @@ def fig3():
             color=CORAL, ms=3.0, lw=1.0, label="arm D")
     ax.axhline(4, color=GRAY, ls="--", lw=0.8)
     ax.set_xscale("log"); ax.set_ylim(2, 5.2)
+    logx(ax, [150, 300, 600, 1200])
     ax.set_xlabel("$n$"); ax.set_ylabel("$\\hat\\lambda_4/\\hat\\lambda_2$")
     ax.legend(frameon=False); ax.set_title("$j^2$ ratios", fontsize=6.6)
-    fig.subplots_adjust(left=0.055, right=0.995, bottom=0.2, top=0.9, wspace=0.42)
+    fig.subplots_adjust(left=0.055, right=0.995, bottom=0.2, top=0.88, wspace=0.42)
     save(fig, "fig3_concentration")
 
 # ---------------------------------------------------------------- FIG 4 (E4)
@@ -210,10 +223,11 @@ def fig4():
     ax.axhline(1.0, color=CORAL, ls="--", lw=0.9)
     ax.annotate("$\\mu_1=1$", (1250, 1.03), fontsize=6.2, color=CORAL, ha="right")
     ax.set_xscale("log"); ax.set_xlabel("$n$"); ax.set_ylabel("$\\hat\\lambda_{0,2}$ (arm C)")
+    logx(ax, [150, 300, 600, 1200])
     ax.set_title("absolute level at $k=0$", fontsize=6.6)
     # (b) rigidity vs tau
     ax = axs[1]
-    for z, col, mkr, name in [(x5["S1_rigidity_const"], TEAL, "o", "constant $w$"),
+    for z, col, mkr, name in [(x5["S1_rigidity_const"], TEAL, "o", "const $w$"),
                               (x5["S1_rigidity_lm"], CORAL, "s", "kernel $w$")]:
         taus = [q["tau"] for q in z["sweep"]]
         vals = [q["max_abs_diff"] for q in z["sweep"]]
@@ -221,7 +235,7 @@ def fig4():
     ax.axvline(x5["S1_rigidity_const"]["tau_c"], color=GRAY, ls=":", lw=0.9)
     ax.annotate("$\\tau_c$", (x5["S1_rigidity_const"]["tau_c"]-0.05, 6e-5), fontsize=6.2, color=GRAY, ha="right")
     ax.set_xlabel("$\\tau$"); ax.set_ylabel("$\\max_j|\\Delta\\hat\\lambda_j|$")
-    ax.legend(frameon=False, loc="lower right"); ax.set_title("$S^1$ rigidity", fontsize=6.6)
+    ax.legend(frameon=False, loc="upper left", handlelength=1.4, labelspacing=0.25, fontsize=5.6); ax.set_title("$S^1$ rigidity", fontsize=6.6)
     # (c) S2 beta vs tau
     ax = axs[2]
     taus = [q["tau"] for q in x5["S2_summary"]]
@@ -235,7 +249,7 @@ def fig4():
                 yerr=[q["first_sd"] for q in x5["S2_summary"]], fmt="s-", color=CORAL, ms=3.2, capsize=2)
     ax.set_xlabel("$\\tau$"); ax.set_ylabel("aligned first nonzero $\\hat\\lambda$")
     ax.set_title("$S^2$ low spectrum", fontsize=6.6)
-    fig.subplots_adjust(left=0.06, right=0.995, bottom=0.2, top=0.9, wspace=0.46)
+    fig.subplots_adjust(left=0.06, right=0.995, bottom=0.2, top=0.88, wspace=0.46)
     save(fig, "fig4_convergence")
 
 # ---------------------------------------------------------------- FIG 5 (E5)
@@ -272,7 +286,7 @@ def fig5():
     ax.axhline(0.9, color=TEAL, ls="--", lw=0.7)
     ax.set_xlabel("$b/n$"); ax.set_ylabel("coverage (90%)")
     ax.set_title("kernel arm: coverage vs $b/n$", fontsize=6.6)
-    fig.subplots_adjust(left=0.075, right=0.995, bottom=0.2, top=0.9, wspace=0.42)
+    fig.subplots_adjust(left=0.075, right=0.995, bottom=0.2, top=0.88, wspace=0.42)
     save(fig, "fig5_inference")
 
 # ---------------------------------------------------------------- FIG 6 (Discussion synthesis)
@@ -289,11 +303,12 @@ def fig6():
     ax.plot(x, t_ker, "-", color=TEAL, lw=1.3, label="kernel: $(n/b)^{1/(m+2)}$")
     lv = lambda tt, m=1: tt**(2*m+4)
     ax.fill_between(x, t_ker, t_deg, color=CORAL, alpha=0.10)
-    ax.annotate("level inflated $\\times(1/x)^{4/m}=16$", (0.72, 3.2), fontsize=6.0, color=CORAL)
+    ax.annotate("level inflated $\\times(1/x)^{4/m}=16$", (0.66, 2.35), fontsize=6.0, color=CORAL)
     ax.plot([0.5], [2.0], "o", color=CORAL, ms=4)
     ax.plot([0.5], [2**(1/3)], "o", color=TEAL, ms=4)
-    ax.set_yscale("log"); ax.set_xlabel("$b/n$"); ax.set_ylabel("subsample bandwidth $t_b/t_n$")
-    ax.legend(frameon=False, loc="upper left")
+    ax.set_yscale("log"); ax.set_ylim(0.95, 3.2); ax.set_xlabel("$b/n$"); ax.set_ylabel("subsample bandwidth $t_b/t_n$")
+    ax.legend(frameon=False, loc="upper left", bbox_to_anchor=(0.01, 1.0), borderaxespad=0.1,
+              handlelength=1.6, labelspacing=0.25)
     ax.set_title("calibration laws ($m=1$): only kernel matching preserves the level", fontsize=6.6)
     # (b) capability matrix
     ax = axs[1]; ax.axis("off")
@@ -316,7 +331,7 @@ def fig6():
         ax.text(-0.08, 2-i+0.45, r, ha="right", va="center", fontsize=6.2)
     ax.set_xlim(-1.6, 4.0); ax.set_ylim(-0.2, 3.3)
     ax.set_title("what is available now (status grid)", fontsize=6.6)
-    fig.subplots_adjust(left=0.03, right=0.99, bottom=0.15, top=0.88, wspace=0.32)
+    fig.subplots_adjust(left=0.03, right=0.99, bottom=0.15, top=0.86, wspace=0.32)
     save(fig, "fig6_synthesis")
 
 # ---------------------------------------------------------------- S-FIG 1
@@ -336,7 +351,7 @@ def sfig1():
     ax.semilogy(dg, np.maximum(rt, 1e-8), "o", color=TEAL, ms=3)
     ax.set_xlabel("max degree"); ax.set_ylabel("$\\Delta\\hat\\lambda$ / bound")
     ax.set_title("all trials far below the bound", fontsize=6.4)
-    fig.subplots_adjust(left=0.14, right=0.97, bottom=0.2, top=0.87, wspace=0.36)
+    fig.subplots_adjust(left=0.14, right=0.97, bottom=0.2, top=0.85, wspace=0.36)
     save(fig, "sfig1_swap")
 
 # ---------------------------------------------------------------- S-FIG 2
@@ -348,13 +363,15 @@ def sfig2():
     ax = axs[0]
     ax.plot(ns, [q["lam2"] for q in d["unnorm"]], "o-", color=CORAL, ms=3.2, lw=1.1)
     ax.set_xscale("log"); ax.set_xlabel("$n$"); ax.set_ylabel("unnormalized $\\hat\\lambda_2$")
+    logx(ax, [50, 100, 200, 400])
     ax.set_title("fixed window: raw growth", fontsize=6.4)
     ax = axs[1]
     ax.plot(ns, [q["law_n2t6"] for q in d["calib"]], "o-", color=TEAL, ms=3.2, lw=1.1)
     ax.set_xscale("log"); ax.set_xlabel("$n$")
+    logx(ax, [50, 100, 200, 400])
     ax.set_ylabel("$\\hat\\lambda_{0,2}/(n^2t^6)$")
     ax.set_title("$n^2t^6$ law removes the growth", fontsize=6.4)
-    fig.subplots_adjust(left=0.14, right=0.97, bottom=0.2, top=0.87, wspace=0.4)
+    fig.subplots_adjust(left=0.14, right=0.97, bottom=0.2, top=0.85, wspace=0.4)
     save(fig, "sfig2_saturation")
 
 if __name__ == "__main__":

@@ -578,11 +578,13 @@ def X4():
         log(f"  armA n={n}: lam2={vals.mean():.4g} ratio={ratios.mean():.3f} law={vals.mean()/(n*n*t**6):.4g}")
     out["armA_vanishing"] = armA
     # ---- calibration of c1 at reference n=1200, k=0, matched bandwidth
+    # c1 is *defined* by the closed form c1 = rho^2 * int_0^tau u^2 eta^{-1}(u) du (Appendix D.2).
+    # Under the experimental convention eta = 1, tau = 1.4 this is 2.744/(12 pi^2).
     nref = 1200; tref = nref**(-1/3)
     Xr, _ = circle(nref, rng=np.random.default_rng(390000)); rhoR = np.full(nref, 1.0/(2*math.pi))
     lam0, _ = pl_k0(Xr, 1.4*tref, rhoR, tref, c1=1.0, k=4)
-    CONST = float(lam0[1])
-    log(f"  calibration: c1 = {CONST:.6g}")
+    CONST = (1.0/(2*math.pi))**2 * (1.4**3)/3.0
+    log(f"  calibration: c1 = {CONST:.6g} (closed form); lam02 at c1=1 was {float(lam0[1]):.6g}")
     out["calibration_c1"] = CONST
     out["calibration_ref"] = dict(n=nref, t=tref, lam02_at_c1_1=float(lam0[1]))
     armB = []

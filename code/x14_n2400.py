@@ -17,7 +17,7 @@ import pl_engine as E
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 N, T = 2400, 3
-C1 = 0.019797  # current calibration (x4.json calibration_c1)
+C1 = (1.0/(2*math.pi))**2 * (1.4**3)/3.0  # closed form, Appendix D.2
 
 
 def main():

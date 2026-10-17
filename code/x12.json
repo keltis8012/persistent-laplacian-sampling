@@ -1,0 +1,52 @@
+{
+ "r_scan_n200": [
+  {
+   "n": 200,
+   "r": 0.25,
+   "edges": 1586,
+   "triangles": 6336,
+   "ker_dim": 200,
+   "lam1_up": 2.0061793351548403,
+   "inverse": 0.4984599245325286
+  },
+  {
+   "n": 200,
+   "r": 0.3,
+   "edges": 1926,
+   "triangles": 9370,
+   "ker_dim": 200,
+   "lam1_up": 2.717817163069254,
+   "inverse": 0.3679423375451392
+  },
+  {
+   "n": 200,
+   "r": 0.4,
+   "edges": 2580,
+   "triangles": 16871,
+   "ker_dim": 200,
+   "lam1_up": 3.695394764963019,
+   "inverse": 0.27060708357365637
+  }
+ ],
+ "n_scan_r030": [
+  {
+   "n": 100,
+   "r": 0.3,
+   "edges": 495,
+   "triangles": 1272,
+   "ker_dim": 99,
+   "lam1_up": 1.9034927855817196,
+   "inverse": 0.5253500341974733
+  },
+  {
+   "n": 200,
+   "r": 0.3,
+   "edges": 1926,
+   "triangles": 9370,
+   "ker_dim": 200,
+   "lam1_up": 2.717817163069254,
+   "inverse": 0.3679423375451392
+  }
+ ],
+ "note": "coexact bottom = smallest nonzero eigenvalue of B2 B2^T (unit weights); equals the first nonzero eigenvalue of the up-part by AB-BA"
+}

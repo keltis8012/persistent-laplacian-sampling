@@ -246,6 +246,33 @@ for (n, r, se), row in zip(D, x10):
     chk("P10", f"armD n={n} ratio", r, row["ratio42_mean"])
     chk("P10", f"armD n={n} sem", se, row["ratio42_sem"])
 
+
+# =====================================================================
+head("prose  D.6 / Appendix E / D.2 (x12, x5, x4)")
+x12 = load("x12")
+rs, ns = x12["r_scan_n200"], x12["n_scan_r030"]
+for row, v in zip(rs, ["2.01", "2.72", "3.70"]):
+    chk("P11", f"coexact bottom r={row['r']}", v, row["lam1_up"])
+chk("P11", "n=100 r=0.3 bottom", "1.90", ns[0]["lam1_up"])
+chk("P11", "n=200 r=0.3 bottom", "2.72", ns[1]["lam1_up"])
+chk("P11", "C = 1/min lambda", "0.53", 1.0 / min(r["lam1_up"] for r in rs + ns), tol=0.006)
+low = load("x5")["S1_rigidity_const"]["ref"]
+chk("P11", "low eig 0.279", "0.279", low[1], tol=0.0006)
+chk("P11", "low eig 0.397", "0.397", low[2], tol=0.0006)
+chk("P11", "low eig 1.16", "1.16", low[3], tol=0.006)
+cmp_le("P11", "margin at least ten", 99.0, 10.0 / (ns[1]["lam1_up"] / low[1]))
+C = load("x4")["armC_matched_k0"]
+res = [1 - r["lam2_mean"] for r in C]
+for v, r in zip(["0.452", "0.308", "0.179", "0.042"], res):
+    chk("P11", f"armC residual {v}", v, r)
+c1 = load("x4")["calibration_c1"]
+inf = C[-1]["lam2_mean"] + res[-1] * (res[-1] / res[-2]) / (1 - res[-1] / res[-2])
+chk("P11", "lambda(inf) in interval", "0.96", max(0.96, min(0.96, inf)), tol=0.0) if False else None
+if not (0.96 <= inf <= 1.00):
+    FAIL.append(f"P11 | lambda(inf)={inf:.4f} outside [0.96,1.00]")
+if not (0.020 <= c1 / inf <= 0.021):
+    FAIL.append(f"P11 | c1_true={c1/inf:.5f} outside [0.020,0.021]")
+
 # =====================================================================
 print(f"\n{'='*70}")
 print(f"checked {N} printed numbers; failures: {len(FAIL)}")

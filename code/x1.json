@@ -1,0 +1,40 @@
+{
+ "T1": {
+  "beta": 1,
+  "expect": 1,
+  "pass_": true
+ },
+ "T2": {
+  "beta": 0,
+  "expect": 0,
+  "pass_": true
+ },
+ "T3": {
+  "beta": 0,
+  "expect": 0,
+  "pass_": true
+ },
+ "T4": {
+  "beta": 1,
+  "expect": 1,
+  "pass_": true
+ },
+ "T5": {
+  "beta": 2,
+  "expect": 2,
+  "pass_": true
+ },
+ "T2_schur": {
+  "dK": 3,
+  "n_zero": 2,
+  "min_eig": 3.3363916236401124e-13,
+  "n_neg": 0
+ },
+ "T3_schur": {
+  "dK": 4,
+  "n_zero": 3,
+  "min_eig": 4.9948749080726366e-17,
+  "n_neg": 0
+ },
+ "all_pass": true
+}

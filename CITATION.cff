@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the manuscript listed below."
+title: "Sampling Theory for Persistent Laplacian Spectra on Random Geometric Complexes"
+type: software
+authors:
+  - family-names: Jin
+    given-names: Qi
+year: 2026
+license: MIT
+keywords:
+  - persistent Laplacian
+  - random geometric complex
+  - spectral statistics
+  - conformal prediction
+  - subsampling
+abstract: >-
+  Code and archived results for a statistical theory of persistent Laplacian spectra on random
+  geometric complexes: fixed-scale concentration, window-matched convergence, an exact harmonic
+  identity, and kernel-matched subsampling confidence intervals.

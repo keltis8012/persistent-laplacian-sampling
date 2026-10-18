@@ -37,9 +37,9 @@ matplotlib >= 3.8
 ```
 pip install -r requirements.txt
 python code/pl_engine.py             # regenerates x1..x8 (~5 min)
-python code/x9_fixedband.py          # Table 7  (§4.9, fixed-bandwidth arm)
+python code/x9_fixedband.py          # Table 8  (§4.7, fixed-bandwidth arm)
 python code/make_figures_v2.py all   # Figures 1-6 + S1-S2, PDF and PNG
-python code/verify_numbers.py        # 187 checks: paper numbers vs archive
+python code/verify_numbers.py        # 295 checks: paper numbers vs archive
 ```
 
 The engine is seed-deterministic. Seeds, tolerances and the three weighting arms are listed in
@@ -53,12 +53,15 @@ Appendix G of the manuscript.
 | kernel ↔ barcode agreement on 128 configurations | `pl_engine.py::X3` → `x3.json`, `x3_grid.json` | §4.2, Fig. 1b |
 | identical barcodes, distinct spectra | `pl_engine.py::X2` → `x2.json` | §4.3, Fig. 2 |
 | concentration and the bandwidth law (arms A, B, C, D) | `pl_engine.py::X4` → `x4.json`, `armD.json` | §4.4, Table 4, Fig. 3 |
-| S¹ rigidity and the S² window sweep | `pl_engine.py::X5` → `x5.json` | §4.5, Table 5, Fig. 4 |
-| three subsample calibrations | `pl_engine.py::X6` → `x6.json`, `x6b.json` | §4.6, Table 6, Fig. 5 |
-| single-swap diagnostic | `pl_engine.py::X7` → `x7.json` | §4.7, SFig. 1 |
-| fixed window: growth like $n^2$ | `pl_engine.py::X8` → `x8.json` | §4.8, SFig. 2 |
-| fixed bandwidth: concentration is relative | `x9_fixedband.py` → `x9.json` | §4.9, Table 7 |
-| every printed number, re-derived | `verify_numbers.py` (187 checks) | §4, Tables 3–7 |
+| S¹ rigidity and the S² window sweep | `pl_engine.py::X5` → `x5.json` | §4.5, Table 6, Fig. 4 |
+| three subsample calibrations | `pl_engine.py::X6` → `x6.json`, `x6b.json` | §4.6, Table 7, Fig. 5 |
+| single-swap diagnostic | `pl_engine.py::X7` → `x7.json` | §4.7, Fig. 6 |
+| fixed window: growth like $n^2$ | `pl_engine.py::X8` → `x8.json` | §4.7, Fig. 7 |
+| fixed bandwidth: concentration is relative | `x9_fixedband.py` → `x9.json` | §4.7, Table 8 |
+| off-circle calibration (ellipse, perturbed circle) | `x19_noncircle.py` → `x19_noncircle.json` | §4.8, Table 9 |
+| protein C-alpha backbones (1CRN, 1UBQ) | `x20_ca.py` → `x20_ca.json`; replicate intervals `x21_protein_ci.py` → `x21_protein_ci_rep.json` | §4.9 |
+| percentile vs scaled subsampling intervals | `x22_coverage.py` → `x22_coverage_scaled.json` | §4.6 |
+| every printed number, re-derived | `verify_numbers.py` (295 checks) | §4.1-4.9, Tables 3-9 |
 
 ## Notes on the numerics
 

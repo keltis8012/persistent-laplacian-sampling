@@ -299,6 +299,90 @@ print(f"  surface beta vs barcode grid: {len(b17)} cells, mismatches {len(bad_be
 if bad_beta:
     FAIL.append(f"P12 | beta disagrees on {len(bad_beta)} cells")
 
+
+# =====================================================================
+head("Table 9  off-circle calibration (x19_noncircle.json)")
+x19 = load("x19_noncircle")
+T9 = [("ellipse_n600", "9.689", "0.119", "0.670", "0.023", "3.99"),
+      ("ellipse_n1200", "9.689", "0.094", "0.757", "0.021", "4.06"),
+      ("wobbly_n600", "7.100", "0.119", "0.750", "0.020", "3.94"),
+      ("wobbly_n1200", "7.100", "0.094", "0.811", "0.021", "4.02")]
+for key, L, t, lam, sd, r4 in T9:
+    row = x19[key]
+    chk("T9", f"{key} L", L, row["L"])
+    chk("T9", f"{key} t", t, row["t"])
+    chk("T9", f"{key} lam2", lam, row["lam2"])
+    chk("T9", f"{key} sem2", sd, row["sem2"])
+    chk("T9", f"{key} j2/j1", r4, row["r4"])
+
+# =====================================================================
+head("prose  §4.8 (x19, x4)")
+chk("P13", "naive transfer factor (2pi/L)^2", "0.421",
+    (2 * math.pi / x19["ellipse_n1200"]["L"]) ** 2)
+chk("P13", "kappa disc", "0.751", x19["nonunif"]["kappa_disc"])
+chk("P13", "kappa SL", "0.895", x19["nonunif"]["kappa_SL"])
+chk("P13", "kappa ratio", "0.84",
+    x19["nonunif"]["kappa_disc"] / x19["nonunif"]["kappa_SL"])
+armC = load("x4")["armC_matched_k0"]
+circ = {row["n"]: row["lam2_mean"] for row in armC}
+chk("P13", "circle level n=600", "0.701", circ[600])
+chk("P13", "circle level n=1200", "0.818", circ[1200])
+chk("P13", "wobbly at 99% of circle", "99",
+    100 * x19["wobbly_n1200"]["lam2"] / circ[1200])
+chk("P13", "ellipse at 93% of circle", "93",
+    100 * x19["ellipse_n1200"]["lam2"] / circ[1200])
+
+# =====================================================================
+head("prose  §4.9 protein backbones (x20_ca.json)")
+x20 = load("x20_ca")
+for tag in ("1CRN", "1UBQ"):
+    prof = x20[tag]
+    lo_c = "171.7" if tag == "1CRN" else "285.7"
+    sp_c = "53" if tag == "1CRN" else "46"
+    chk("P14", f"{tag} contour length", lo_c, prof["L"])
+    chk("P14", f"{tag} bandwidth-law spread", sp_c,
+        100 * prof["bandwidth_law_spread"])
+    row7 = [r for r in prof["k0"] if abs(r["t"] - 7.0) < 1e-9][0]
+    want = (["0.085", "0.155", "0.224", "0.280"] if tag == "1CRN"
+            else ["0.054", "0.092", "0.107", "0.153"])
+    for j, wv in enumerate(want, start=1):
+        chk("P14", f"{tag} t=7 lam{j+1}/Lam", wv, row7["lam_Lam_units"][j])
+    iv = prof["interval"]
+    chk("P14", f"{tag} CI lower", "1.25" if tag == "1CRN" else "0.25",
+        iv["lo"] / (1e10 if tag == "1CRN" else 1e11))
+    chk("P14", f"{tag} CI upper", "3.02" if tag == "1CRN" else "1.95",
+        iv["hi"] / (1e10 if tag == "1CRN" else 1e11))
+    chk("P14", f"{tag} full lam2", "1.80" if tag == "1CRN" else "0.85",
+        iv["full"] / (1e10 if tag == "1CRN" else 1e11))
+    chk("P14", f"{tag} tb", "8.82", iv["tb"])
+    chk("P14", f"{tag} beta1 at t=6", "6", prof["k1"]["t6.0"]["beta1"])
+    chk("P14", f"{tag} beta1 at t=8",
+        "0" if tag == "1CRN" else "4", prof["k1"]["t8.0"]["beta1"])
+
+
+# =====================================================================
+head("prose  §4.6 scaled intervals (x22_coverage_scaled.json)")
+x22 = load("x22_coverage_scaled")
+by = {round(r["frac"], 2): r for r in x22}
+chk("P15", "b/n=0.5 level bias", "19", -by[0.50]["bias"])
+chk("P15", "b/n=0.5 scaled @90", "0.90", by[0.50]["sca90"])
+chk("P15", "b/n=0.5 scaled @95", "0.94", by[0.50]["sca95"])
+chk("P15", "b/n=0.5 percentile @90", "0.45", by[0.50]["pct90"])
+chk("P15", "b/n=0.5 percentile @95", "0.54", by[0.50]["pct95"])
+chk("P15", "b/n=0.75 level bias", "6.6", -by[0.75]["bias"])
+chk("P15", "b/n=0.75 scaled @90", "0.76", by[0.75]["sca90"])
+chk("P15", "b/n=0.75 scaled @95", "0.86", by[0.75]["sca95"])
+chk("P15", "b/n=0.90 level bias", "2.2", -by[0.90]["bias"])
+chk("P15", "b/n=0.90 scaled @90", "0.57", by[0.90]["sca90"])
+chk("P15", "b/n=0.90 scaled @95", "0.64", by[0.90]["sca95"])
+
+# =====================================================================
+head("prose  §4.9 replicate intervals (x21_protein_ci_rep.json)")
+x21 = {r["name"]: r for r in load("x21_protein_ci_rep")}
+for tag in ("1CRN", "1UBQ"):
+    chk("P16", f"{tag} replicate coverage", "20", x21[tag]["covered"])
+    chk("P16", f"{tag} replicates", "20", x21[tag]["R"])
+
 # =====================================================================
 print(f"\n{'='*70}")
 print(f"checked {N} printed numbers; failures: {len(FAIL)}")
